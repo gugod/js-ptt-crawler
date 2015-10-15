@@ -37,6 +37,27 @@ function harvest_board_indices(board_url, board_name, cb) {
     )
 }
 
+function harvest_articles(board_index_url, board_name, cb) {
+   ptt_get(
+        board_index_url,
+        function(body) {
+            var $ = cheerio.load(body);
+            var ret = [];
+            $("a[href^='/bbs/" + board_name + "/']").each(function(i, el) {
+                var href = $(el).attr("href");
+                var m;
+                if (m = href.match(/(M.+)\.html/)) {
+                    ret.push({
+                        id: m[1],
+                        url: ptt_url + href
+                    });
+                }
+            });
+            cb(ret);
+        }
+    )
+}
+
 if ( process.argv.length != 4) {
     process.abort();
 }
@@ -48,6 +69,14 @@ harvest_board_indices(
     ptt_url + "/bbs/" + board_name + "/index.html",
     board_name,
     function(board_indices) {
-        console.log(board_indices);
+        for (var i = 0; i < board_indices.length; i++) {
+            harvest_articles(
+                board_indices[i]["url"],
+                board_name,
+                function(articles) {
+                    console.log(articles);
+                }
+            );
+        }
     }
 );
