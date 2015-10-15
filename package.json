@@ -1,0 +1,13 @@
+{
+  "name": "js-ptt-crawler",
+  "subdomain": "gugod.org",
+  "version": "0.1.1-1",
+  "engines": {
+    "node": "4.1.x",
+    "npm": "2.13.x"
+  },
+  "analyze": false,
+  "dependencies": {
+    "cheerio": "0.10.3"
+  }
+}
