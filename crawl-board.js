@@ -1,5 +1,8 @@
-var https = require('https'),
-    cheerio = require('cheerio');
+"use strict";
+
+const https = require('https'),
+      cheerio = require('cheerio'),
+      fs = require('fs');
 
 var ptt_url = "https://www.ptt.cc";
 
@@ -58,6 +61,27 @@ function harvest_articles(board_index_url, board_name, cb) {
     )
 }
 
+function download_articles( articles, board_name, qoutput_dir ) {
+    var article;
+    var board_dir = output_dir + "/" + board_name;
+
+    var download_one_and_next = function(i, l) {
+        if (i >= l) return;
+        (function(article) {
+            ptt_get(
+                article["url"],
+                function(html) {
+                    var fn = board_dir + "/" + article["id"] + ".html";
+                    fs.writeFileSync(fn, html);
+                    console.log("==> " + fn);
+                    download_one_and_next( i+1, l );
+                }
+            );
+        })(articles[i]);
+    };
+    download_one_and_next(0, articles.length);
+}
+
 if ( process.argv.length != 4) {
     process.abort();
 }
@@ -73,9 +97,7 @@ harvest_board_indices(
             harvest_articles(
                 board_indices[i]["url"],
                 board_name,
-                function(articles) {
-                    console.log(articles);
-                }
+                function(a) { download_articles(a, board_name, output_dir) }
             );
         }
     }
