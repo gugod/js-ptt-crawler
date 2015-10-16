@@ -8,6 +8,7 @@
   },
   "analyze": false,
   "dependencies": {
-    "cheerio": "0.10.3"
+      "walkdir": "0.0.10",
+      "cheerio": "0.10.3"
   }
 }
