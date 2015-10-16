@@ -30,11 +30,24 @@ function harvest_board_indices(board_url, board_name, cb) {
                 var m;
                 if (m = href.match(/index([0-9]+)\.html/)) {
                     ret.push({
-                        page_number: m[1],
+                        page_number: parseInt(m[1]),
                         url: ptt_url + href
                     });
                 }
             });
+            if (ret[0]["page_number"] > ret[1]["page_number"]) {
+                var tmp = ret[0];
+                ret[0] = ret[1];
+                ret[1] = tmp;
+            }
+            var last_page = ret.pop();
+            for(var i = ret[0]["page_number"] + 1; i < last_page["page_number"] - 1; i++) {
+                ret.push({
+                    page_number: i,
+                    url: ptt_url + "/bbs/" + board_name + "/index" + String(i) + ".html"
+                });
+            }
+            ret.push(last_page);
             cb(ret);
         }
     )
